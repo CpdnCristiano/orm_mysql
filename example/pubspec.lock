@@ -232,6 +232,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.4"
+  recase:
+    dependency: transitive
+    description:
+      name: recase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   shelf:
     dependency: transitive
     description:
@@ -281,6 +288,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  sql_recase:
+    dependency: transitive
+    description:
+      name: sql_recase
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.2"
   stack_trace:
     dependency: transitive
     description:

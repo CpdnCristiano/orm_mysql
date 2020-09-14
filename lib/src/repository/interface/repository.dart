@@ -1,7 +1,10 @@
 import 'dart:mirrors';
 
+import 'package:mysql1/mysql1.dart';
 import 'package:orm_mysql/src/annotations/annotations.dart';
 import 'package:orm_mysql/src/mysql/db.dart';
+import 'package:recase/recase.dart';
+import 'package:sql_recase/sql_recase.dart';
 part 'functions_repository.dart';
 
 // Example: UserRepository extends Repository<User, int>
@@ -17,7 +20,9 @@ abstract class Repository<T, S> {
     var data = await MySQL.connection.query('SELECT * FROM $tablename');
     List result = <T>[];
     data.forEach((element) {
-      InstanceMirror res = cm.newInstance(#fromJson, [element.fields]);
+      _replaceBoolInt(cm, element.fields);
+      InstanceMirror res = cm.newInstance(
+          #fromJson, [recaseMap(element.fields, recaseKeyCamelCase)]);
       result.add(res.reflectee);
     });
 
@@ -32,7 +37,9 @@ abstract class Repository<T, S> {
         .query('SELECT * FROM $tablename WHERE $primaryKey = ?', [value]);
 
     if (data.isNotEmpty) {
-      InstanceMirror res = cm.newInstance(#fromJson, [data.single.fields]);
+      _replaceBoolInt(cm, data.single.fields);
+      InstanceMirror res = cm.newInstance(
+          #fromJson, [recaseMap(data.single.fields, recaseKeyCamelCase)]);
       return res.reflectee;
     }
     return null;
@@ -50,11 +57,14 @@ abstract class Repository<T, S> {
     InstanceMirror res = reflect(value);
     ClassMirror cm = reflectClass(T);
     String tablename = _getTableName(cm);
-    Map<String, dynamic> map = res.invoke(#toJson, []).reflectee;
+    Map<String, dynamic> map =
+        recaseMap(res.invoke(#toJson, []).reflectee, recaseKeySnakeCase);
     List<String> keys = map.keys.toList();
     map.forEach((key, value) {
       if (value == null) keys.remove(key);
     });
+    //List<String> keys = [];
+    // _keys.forEach((key) => keys.add(ReCase(key).snakeCase));
     List<dynamic> values = [];
 
     map.values.forEach((v) {

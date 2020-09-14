@@ -5,12 +5,13 @@ class Table {
 
 const table = Table();
 
-class Column {
+// Houve falha ao retorna objeto com o nome diferente do atributo
+/* class Column {
   final String name;
   const Column({this.name});
 }
 
-const column = Column();
+const column = Column(); */
 
 class Id {
   final bool autoIncrement;

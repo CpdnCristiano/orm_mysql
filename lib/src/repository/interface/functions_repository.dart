@@ -4,26 +4,25 @@ String _getTableName(ClassMirror cm) {
   String tablename;
   cm.metadata.forEach((meta) {
     if (meta.reflectee is Table) {
-      tablename = meta.reflectee.name ??
-          MirrorSystem.getName(cm.simpleName).toLowerCase();
+      tablename = meta.reflectee.name ?? MirrorSystem.getName(cm.simpleName);
     }
   });
   if (tablename == null) {
     throw Exception('annotations @Table not found in ${cm.location} ');
   }
-  return tablename;
+  return ReCase(tablename).snakeCase;
 }
 
 String _getColumnName(VariableMirror vm) {
   //print(vm.metadata);
-  String columnName = MirrorSystem.getName(vm.simpleName).toLowerCase();
-  vm.metadata.forEach((meta) {
+  String columnName = MirrorSystem.getName(vm.simpleName);
+  /* vm.metadata.forEach((meta) {
     if (meta.reflectee is Column) {
-      columnName = meta.reflectee.name ??
-          MirrorSystem.getName(vm.simpleName).toLowerCase();
+      columnName = meta.reflectee.name ?? MirrorSystem.getName(vm.simpleName);
     }
   });
-  return columnName;
+ */
+  return ReCase(columnName).snakeCase;
 }
 
 String _createTableFromObject(Type classe) {
@@ -109,4 +108,18 @@ String _getPrimaryKey(ClassMirror cm) {
     throw Exception('More than one @id was entered in the ${cm.location} ');
   }
   return primarykey;
+}
+
+void _replaceBoolInt(ClassMirror cm, Map<String, dynamic> data) {
+  cm.declarations.forEach((key, value) {
+    if (!value.isPrivate) {
+      if (value is VariableMirror) {
+        if (value.type.reflectedType.toString() == 'bool') {
+          data.update(ReCase(_getColumnName(value)).snakeCase, (value) {
+            return value == 1;
+          });
+        }
+      }
+    }
+  });
 }
