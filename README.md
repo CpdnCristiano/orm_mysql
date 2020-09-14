@@ -62,6 +62,19 @@ retornar todos as objeto da tabela.
 apagar um objeto
 - insert(object)
 apagar um objeto
+
+#### inicar o banco conexão com o banco de dodos
+no main.dart
+```dart
+void main() async {
+  MySQL db = MySQL(
+    host: "localhost",
+    user: "admin",
+    password: "1234",
+    db: "teste",
+  );
+  await db.init();
+
 #### TODO:
 - Update
 - Custom query

@@ -52,10 +52,10 @@ class User {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['age'] = this.age;
-    data['email'] = this.email;
+    data['id'] = id;
+    data['name'] = name;
+    data['age'] = age;
+    data['email'] = email;
     return data;
   }
 }

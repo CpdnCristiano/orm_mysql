@@ -1,5 +1,5 @@
 name: orm_mysql
-description: A sample command-line application.
+description: Uma orm mysql em dart
 version: 0.0.1
 
 environment:
