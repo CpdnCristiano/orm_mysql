@@ -7,7 +7,7 @@ Essa é uma tentativa de desenvolver uma ORM em dart, ainda não vi nenhum...
 ```yaml
 dependencies:
     orm_mysql: 
-        git: ../
+        git: https://github.com/CpdnCristiano/orm_mysql.git
 ```
 - Cria sua classe model
 ```dart
@@ -74,7 +74,7 @@ void main() async {
     db: "teste",
   );
   await db.init();
-
+```
 #### TODO:
 - Update
 - Custom query
