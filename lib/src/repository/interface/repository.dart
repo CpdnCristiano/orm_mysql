@@ -1,6 +1,5 @@
 import 'dart:mirrors';
 
-import 'package:mysql1/mysql1.dart';
 import 'package:orm_mysql/src/annotations/annotations.dart';
 import 'package:orm_mysql/src/mysql/db.dart';
 import 'package:recase/recase.dart';
@@ -63,8 +62,6 @@ abstract class Repository<T, S> {
     map.forEach((key, value) {
       if (value == null) keys.remove(key);
     });
-    //List<String> keys = [];
-    // _keys.forEach((key) => keys.add(ReCase(key).snakeCase));
     List<dynamic> values = [];
 
     map.values.forEach((v) {
@@ -94,5 +91,25 @@ abstract class Repository<T, S> {
 
     return await MySQL.connection.query(
         'INSERT INTO `$tablename`(${keys.join(",")}) VALUES (${values.join(",")})');
+  }
+
+  void update(S id, T objet) async {
+    ClassMirror cm = reflectClass(T);
+    String tablename = _getTableName(cm);
+    String primaryKey = _getPrimaryKey(cm);
+    InstanceMirror res = reflect(objet);
+    Map<String, dynamic> map =
+        recaseMap(res.invoke(#toJson, []).reflectee, recaseKeySnakeCase);
+    List<String> query = [];
+    map.forEach((key, value) {
+      if (value is String && value != null) {
+        query.add('$key = "$value"');
+      } else {
+        query.add('$key = $value');
+      }
+    });
+    await MySQL.connection.query(
+        'UPDATE `$tablename` SET ${query.join(',')} WHERE $primaryKey = ?',
+        [id]);
   }
 }

@@ -16,7 +16,7 @@ void main() async {
       name: 'Cristiano',
       age: 19,
       email: 'CpdnCristiano@gmail.com',
-      isActive: true));
+      isActive: null));
   List<User> allUser = await repository.findAll();
 
   print('Printando todos os usuários');
@@ -24,6 +24,14 @@ void main() async {
     print(user.toJson());
     print('\n');
   });
+  await repository.update(
+      1,
+      User(
+          id: 1,
+          name: 'Cristiano nascimento',
+          age: 20,
+          email: 'CpdnCristiano@gmail.com',
+          isActive: true));
 
   print('Printando o usuário de id = 1');
   User user = await repository.findOne(1);
