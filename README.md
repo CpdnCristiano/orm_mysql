@@ -76,6 +76,5 @@ void main() async {
   await db.init();
 ```
 #### TODO:
-- Update
 - Custom query
 - Suporte para Foreign key
