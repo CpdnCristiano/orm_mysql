@@ -10,3 +10,5 @@ doc/api/
 
 pubspec.lock
 example/lib/config.dart
+example/.packages
+.DS_Store
