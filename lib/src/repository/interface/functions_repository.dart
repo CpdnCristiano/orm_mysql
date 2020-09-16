@@ -22,6 +22,8 @@ String _getColumnName(VariableMirror vm) {
     }
   });
  */
+
+  //mudando para contar _ para duas palvras no sql
   return ReCase(columnName).snakeCase;
 }
 
@@ -31,6 +33,7 @@ String _createTableFromObject(Type classe) {
   String tablename = _getTableName(cm);
   _getPrimaryKey(cm);
 
+  //TODO : livrar coluna com ForeignTable
   cm.metadata.forEach((meta) {
     if (meta.reflectee is Table) {
       query += 'CREATE TABLE IF NOT EXISTS $tablename (';
@@ -38,10 +41,13 @@ String _createTableFromObject(Type classe) {
         if (!value.isPrivate) {
           if (!(value is MethodMirror)) {
             VariableMirror vm = cm.declarations[key];
-            if (query.endsWith('(')) {
-              query += '\n ${_processColunm(vm)}';
-            } else {
-              query += ',\n ${_processColunm(vm)}';
+            final columnTable = _processColunm(vm);
+            if (columnTable.isNotEmpty) {
+              if (query.endsWith('(')) {
+                query += '\n ${columnTable}';
+              } else {
+                query += ',\n ${columnTable}';
+              }
             }
           }
         }
@@ -53,13 +59,18 @@ String _createTableFromObject(Type classe) {
   return query;
 }
 
+//TODO : adicionado FOREIGN
 String _processColunm(VariableMirror vm) {
   String column = _getColumnName(vm);
   column += ' ';
   column += getSqlType(vm.type.reflectedType.toString());
   vm.metadata.forEach((meta) {
-    if (meta.reflectee is Id) {
+    if (meta.reflectee is ForeignTable) {
+      column = '';
+    } else if (meta.reflectee is Id) {
       column += ' PRIMARY KEY AUTO_INCREMENT NOT NULL';
+    } else if (meta.reflectee is ForeignId) {
+      column += ' FOREIGN KEY REFERENCES';
     } else if (meta.reflectee is NotNull) {
       column += ' NOT NULL';
     }
@@ -84,6 +95,7 @@ String getSqlType(String dartType) {
 String _getPrimaryKey(ClassMirror cm) {
   String primarykey;
   int primarykeys = 0;
+
   cm.metadata.forEach((meta) {
     if (meta.reflectee is Table) {
       cm.declarations.forEach((key, value) {
@@ -107,7 +119,62 @@ String _getPrimaryKey(ClassMirror cm) {
   if (primarykeys > 1) {
     throw Exception('More than one @id was entered in the ${cm.location} ');
   }
+
   return primarykey;
+}
+
+//TODO : pegando ForeignId das classes ForeignTable
+List<ForeignTableInner> _getForeignKeys(ClassMirror cm, Type T) {
+  var foreignkey = <ForeignTableInner>[];
+  cm.metadata.forEach((meta) {
+    if (meta.reflectee is Table) {
+      cm.declarations.forEach((key, value) {
+        if (!value.isPrivate) {
+          if (!(value is MethodMirror)) {
+            VariableMirror vm = cm.declarations[key];
+
+            vm.metadata.forEach((meta) {
+              if (meta.reflectee is ForeignTable) {
+                ClassMirror cmInner = reflectClass(vm.type.reflectedType);
+                //print('LIVRO NAMe ---' +
+                //MirrorSystem.getName(cmInner.simpleName));
+
+                cmInner.metadata.forEach((metaInner) {
+                  if (metaInner.reflectee is Table) {
+                    //print('LIVRO is TABLE ---');
+                    cmInner.declarations.forEach((key, value) {
+                      if (!value.isPrivate) {
+                        if (!(value is MethodMirror)) {
+                          //foreignkey.add(_getColumnName(vm));
+                          VariableMirror vmInner = cmInner.declarations[key];
+
+                          vmInner.metadata.forEach((metadata) {
+                            if (metadata.reflectee is ForeignId) {
+                             // print('LIVRO NAMe ---' +
+                                 // MirrorSystem.getName(vmInner.simpleName));
+                              foreignkey.add(ForeignTableInner(
+                                  name: _getTableName(cmInner),
+                                  foreignId: _getColumnName(vmInner)));
+                            }
+                          });
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        }
+      });
+    }
+  });
+
+  if (foreignkey.isEmpty) {
+    throw Exception('Annotations @ForeignId not found in ${cm.location} ');
+  }
+
+  return foreignkey;
 }
 
 void _replaceBoolInt(ClassMirror cm, Map<String, dynamic> data) {

@@ -5,6 +5,7 @@ import 'package:orm_mysql/src/annotations/annotations.dart';
 import 'package:orm_mysql/src/mysql/db.dart';
 import 'package:recase/recase.dart';
 import 'package:sql_recase/sql_recase.dart';
+
 part 'functions_repository.dart';
 
 // Example: UserRepository extends Repository<User, int>
@@ -94,7 +95,7 @@ abstract class Repository<T, S> {
     return findOne(_intToId(result.insertId));
   }
 
-  void update(S id, T objet) async {
+  void update(S id, T objet, {bool withNull = true}) async {
     ClassMirror cm = reflectClass(T);
     String tablename = _getTableName(cm);
     String primaryKey = _getPrimaryKey(cm);
@@ -106,11 +107,23 @@ abstract class Repository<T, S> {
       if (value is String && value != null) {
         query.add('$key = "$value"');
       } else {
-        query.add('$key = $value');
+        // Achei que não aceitar valores null faz parte da regra de negocio
+        if (withNull) {
+          query.add('$key = $value');
+        } else if (value != null) {
+          query.add('$key = $value');
+        }
       }
     });
     await MySQL.connection.query(
         'UPDATE `$tablename` SET ${query.join(',')} WHERE $primaryKey = ?',
         [id]);
   }
+}
+
+class ForeignTableInner {
+  final String name;
+  final String foreignId;
+
+  ForeignTableInner({this.name, this.foreignId});
 }
