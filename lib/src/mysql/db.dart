@@ -26,7 +26,7 @@ class MySQL {
       this.characterSet = CharacterSet.UTF8});
 
   Future<void> init() async {
-    ConnectionSettings settings = new ConnectionSettings(
+    ConnectionSettings settings = ConnectionSettings(
         characterSet: characterSet,
         db: db,
         host: host,
@@ -42,7 +42,7 @@ class MySQL {
   }
 
   Future<void> close() async {
-    _connection.close();
+    return _connection.close();
   }
 
   static MySqlConnection get connection => _connection;
