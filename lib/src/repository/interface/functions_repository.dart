@@ -41,15 +41,14 @@ String _createTableFromObject(Type classe) {
         if (!value.isPrivate) {
           if (!(value is MethodMirror)) {
             VariableMirror vm = cm.declarations[key];
-            vm.metadata.forEach((meta) {
-              if (!(meta.reflectee is ForeignTable)) {
-                if (query.endsWith('(')) {
-                  query += '\n ${_processColunm(vm)}';
-                } else {
-                  query += ',\n ${_processColunm(vm)}';
-                }
+            final columnTable = _processColunm(vm);
+            if (columnTable.isNotEmpty) {
+              if (query.endsWith('(')) {
+                query += '\n ${columnTable}';
+              } else {
+                query += ',\n ${columnTable}';
               }
-            });
+            }
           }
         }
       });
@@ -66,7 +65,9 @@ String _processColunm(VariableMirror vm) {
   column += ' ';
   column += getSqlType(vm.type.reflectedType.toString());
   vm.metadata.forEach((meta) {
-    if (meta.reflectee is Id) {
+    if (meta.reflectee is ForeignTable) {
+      column = '';
+    } else if (meta.reflectee is Id) {
       column += ' PRIMARY KEY AUTO_INCREMENT NOT NULL';
     } else if (meta.reflectee is ForeignId) {
       column += ' FOREIGN KEY REFERENCES';
@@ -121,6 +122,7 @@ String _getPrimaryKey(ClassMirror cm) {
 
   return primarykey;
 }
+
 //TODO : pegando ForeignId das classes ForeignTable
 List<ForeignTableInner> _getForeignKeys(ClassMirror cm, Type T) {
   var foreignkey = <ForeignTableInner>[];
@@ -130,22 +132,31 @@ List<ForeignTableInner> _getForeignKeys(ClassMirror cm, Type T) {
         if (!value.isPrivate) {
           if (!(value is MethodMirror)) {
             VariableMirror vm = cm.declarations[key];
+
             vm.metadata.forEach((meta) {
               if (meta.reflectee is ForeignTable) {
                 ClassMirror cmInner = reflectClass(vm.type.reflectedType);
+                //print('LIVRO NAMe ---' +
+                //MirrorSystem.getName(cmInner.simpleName));
 
                 cmInner.metadata.forEach((metaInner) {
                   if (metaInner.reflectee is Table) {
+                    //print('LIVRO is TABLE ---');
                     cmInner.declarations.forEach((key, value) {
                       if (!value.isPrivate) {
                         if (!(value is MethodMirror)) {
-                          if (metaInner.reflectee is ForeignId) {
-                            //foreignkey.add(_getColumnName(vm));
-                            VariableMirror vmInner = cmInner.declarations[key];
-                            foreignkey.add(ForeignTableInner(
-                                name: _getColumnName(vm),
-                                foreignId: _getColumnName(vmInner)));
-                          }
+                          //foreignkey.add(_getColumnName(vm));
+                          VariableMirror vmInner = cmInner.declarations[key];
+
+                          vmInner.metadata.forEach((metadata) {
+                            if (metadata.reflectee is ForeignId) {
+                             // print('LIVRO NAMe ---' +
+                                 // MirrorSystem.getName(vmInner.simpleName));
+                              foreignkey.add(ForeignTableInner(
+                                  name: _getTableName(cmInner),
+                                  foreignId: _getColumnName(vmInner)));
+                            }
+                          });
                         }
                       }
                     });

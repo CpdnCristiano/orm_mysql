@@ -1,7 +1,6 @@
 import 'package:example/config_exemple.dart';
 import 'package:orm_mysql/orm_mysql.dart';
 
-
 void main() async {
   MySQL db = MySQL(
     host: Config.host,
