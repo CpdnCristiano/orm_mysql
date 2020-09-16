@@ -5,6 +5,7 @@ import 'package:orm_mysql/src/annotations/annotations.dart';
 import 'package:orm_mysql/src/mysql/db.dart';
 import 'package:recase/recase.dart';
 import 'package:sql_recase/sql_recase.dart';
+
 part 'functions_repository.dart';
 
 // Example: UserRepository extends Repository<User, int>
@@ -29,17 +30,29 @@ abstract class Repository<T, S> {
     return result;
   }
 
-  Future<T> findOne(S value) async {
+  //TODO: COm ForeignId
+  Future<T> findOne(S value, {joinTable = false}) async {
     ClassMirror cm = reflectClass(T);
     String tablename = _getTableName(cm);
     String primaryKey = _getPrimaryKey(cm);
-    var data = await MySQL.connection
-        .query('SELECT * FROM $tablename WHERE $primaryKey = ?', [value]);
+
+    var data;
+    if (joinTable) {
+      final foreignKey = _getForeignKeys(cm, T);
+      // FAZER o JOIN
+      //data = await MySQL.connection
+        //  .query('SELECT * FROM $tablename WHERE $primaryKey = ?', [value]);
+    } else {
+      data = await MySQL.connection
+          .query('SELECT * FROM $tablename WHERE $primaryKey = ?', [value]);
+    }
 
     if (data.isNotEmpty) {
       _replaceBoolInt(cm, data.single.fields);
       InstanceMirror res = cm.newInstance(
-          #fromJson, [recaseMap(data.single.fields, recaseKeyCamelCase)]);
+          // retonar o CamelCase para pasar no Dart
+          #fromJson,
+          [recaseMap(data.single.fields, recaseKeyCamelCase)]);
       return res.reflectee;
     }
     return null;
@@ -94,7 +107,7 @@ abstract class Repository<T, S> {
     return findOne(_intToId(result.insertId));
   }
 
-  void update(S id, T objet) async {
+  void update(S id, T objet, {bool withNull = true}) async {
     ClassMirror cm = reflectClass(T);
     String tablename = _getTableName(cm);
     String primaryKey = _getPrimaryKey(cm);
@@ -106,11 +119,22 @@ abstract class Repository<T, S> {
       if (value is String && value != null) {
         query.add('$key = "$value"');
       } else {
-        query.add('$key = $value');
+        if (withNull) {
+          query.add('$key = $value');
+        } else if (value != null) {
+          query.add('$key = $value');
+        }
       }
     });
     await MySQL.connection.query(
         'UPDATE `$tablename` SET ${query.join(',')} WHERE $primaryKey = ?',
         [id]);
   }
+}
+
+class ForeignTableInner {
+  final String name;
+  final String foreignId;
+
+  ForeignTableInner({this.name, this.foreignId});
 }

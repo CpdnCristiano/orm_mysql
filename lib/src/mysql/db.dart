@@ -42,7 +42,8 @@ class MySQL {
   }
 
   Future<void> close() async {
-    return _connection.close();
+
+    await _connection.close();
   }
 
   static MySqlConnection get connection => _connection;
