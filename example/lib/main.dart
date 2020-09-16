@@ -13,14 +13,6 @@ void main() async {
     db: Config.db,
   );
   await db.init();
-  UserRepository repository = UserRepository();
-  print((await repository.insert(User(
-          name: 'Cristiano',
-          age: 19,
-          email: 'CpdnCristiano@gmail.com',
-          isActive: null)))
-      .toJson());
-
   await runApp(GetServer(
     getPages: AppPages.routes,
   ));
