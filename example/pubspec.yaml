@@ -6,8 +6,9 @@ environment:
   sdk: '>=2.4.0 <3.0.0'
 
 dependencies:
-  #get_server: 0.5.0
-  orm_mysql: 
+  get_server:
+    git: https://github.com/jonataslaw/get_server.git
+  orm_mysql:
     path: ../
 
 dev_dependencies:
