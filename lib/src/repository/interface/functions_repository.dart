@@ -182,11 +182,21 @@ void _replaceBoolInt(ClassMirror cm, Map<String, dynamic> data) {
     if (!value.isPrivate) {
       if (value is VariableMirror) {
         if (value.type.reflectedType.toString() == 'bool') {
-          data.update(ReCase(_getColumnName(value)).snakeCase, (value) {
-            return value == 1;
-          });
+          String columnBool = ReCase(_getColumnName(value)).snakeCase;
+          if (data.containsKey(columnBool)) {
+            data.update(columnBool, (value) {
+              if (value != null) return value == 1;
+              print(value);
+              return null;
+            });
+          }
         }
       }
     }
   });
+}
+
+// temp
+dynamic _intToId(dynamic id) {
+  return id;
 }

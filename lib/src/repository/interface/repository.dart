@@ -1,5 +1,6 @@
 import 'dart:mirrors';
 
+import 'package:mysql1/mysql1.dart';
 import 'package:orm_mysql/src/annotations/annotations.dart';
 import 'package:orm_mysql/src/mysql/db.dart';
 import 'package:recase/recase.dart';
@@ -65,7 +66,7 @@ abstract class Repository<T, S> {
         .query('DELETE FROM $tablename WHERE $primaryKey = ?', [value]);
   }
 
-  Future<void> insert(T value) async {
+  Future<T> insert(T value) async {
     InstanceMirror res = reflect(value);
     ClassMirror cm = reflectClass(T);
     String tablename = _getTableName(cm);
@@ -101,9 +102,9 @@ abstract class Repository<T, S> {
         }
       }
     }); */
-
-    return await MySQL.connection.query(
+    Results result = await MySQL.connection.query(
         'INSERT INTO `$tablename`(${keys.join(",")}) VALUES (${values.join(",")})');
+    return findOne(_intToId(result.insertId));
   }
 
   void update(S id, T objet, {bool withNull = true}) async {
