@@ -29,4 +29,4 @@ Make a new request request using the put method on the `https://orm-get-server.h
 Make a new request request using the delete method on the  `https://orm-get-server.herokuapp.com/api/user?id=1`, passing the user ID as a parameter
 
 </br>
-observations: In the future, the ORM will have a relationship between the arguarde tables
+observations: In the future, the ORM will have a relationship between the wait

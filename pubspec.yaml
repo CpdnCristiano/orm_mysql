@@ -1,6 +1,7 @@
 name: orm_mysql
-description: Uma orm mysql em dart
-version: 0.0.2
+description: initial sketch of a mysql dart orm
+version: 0.0.5
+homepage: https://github.com/CpdnCristiano/orm_mysql
 
 environment:
   sdk: '>=2.8.1 <3.0.0'
