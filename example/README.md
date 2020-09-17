@@ -10,7 +10,7 @@ to start making a request on the `https://orm-get-server.herokuapp.com/api/user`
 ```json
 {	
     "name": "YOUR_NAME",
-    "age": 0, // Your age
+    "age": 0, 
     "email": "YOUR_EMAIL",
     "isActive": true
 }
