@@ -150,8 +150,8 @@ List<ForeignTableInner> _getForeignKeys(ClassMirror cm, Type T) {
 
                           vmInner.metadata.forEach((metadata) {
                             if (metadata.reflectee is ForeignId) {
-                             // print('LIVRO NAMe ---' +
-                                 // MirrorSystem.getName(vmInner.simpleName));
+                              // print('LIVRO NAMe ---' +
+                              // MirrorSystem.getName(vmInner.simpleName));
                               foreignkey.add(ForeignTableInner(
                                   name: _getTableName(cmInner),
                                   foreignId: _getColumnName(vmInner)));

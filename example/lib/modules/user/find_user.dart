@@ -24,6 +24,7 @@ class FindUser extends GetView {
     } on FormatException catch (_) {
       return ErrorWidget('the id parameter entered is not of type int', 400);
     } catch (e) {
+      print(e);
       return ErrorWidget('an unexpected error occurred', 500);
     }
   }

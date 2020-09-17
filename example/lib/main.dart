@@ -1,6 +1,4 @@
 import 'package:example/config.dart';
-import 'package:example/data/models/user.model.dart';
-import 'package:example/data/repositorys/user.repository.dart';
 import 'package:get_server/get_server.dart';
 import 'package:orm_mysql/orm_mysql.dart';
 import 'routes/app_pages.dart';

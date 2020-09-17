@@ -8,6 +8,6 @@ class ErrorWidget extends GetWidget {
   Future build(Context context) {
     return context.response
         .status(code)
-        .sendJson({"code": code, "message": message});
+        .sendJson({'code': code, 'message': message});
   }
 }
