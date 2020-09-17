@@ -1,27 +1,27 @@
-readme em português por enquanto
 # ORM_MYSQL DART
-Essa é uma tentativa de desenvolver uma ORM em dart, ainda não vi nenhum...
-**é uma versão alpha use apenas em testes não use em produção**
-## Primeiros passos
-- adicionr a dependência no seu pubspec.yaml
+This is an attempt to develop an ORM in dart, I haven't seen any yet ...
+** is an alpha version use only in tests do not use in production **
+## First steps
+- add the dependency in your pubspec.yaml
+
 ```yaml
 dependencies:
     orm_mysql: 
         git: https://github.com/CpdnCristiano/orm_mysql.git
 ```
-- Cria sua classe model
+- Create your model class
 ```dart
-// A Anotacão table indica ser uma tabela no mysql
-// NOTA: Você pode adicionar um nome diferete da classe na sua tabela
-// @Table(name: 'tabela_user')
+//The table Annotation indicates to be a table in mysql
+//NOTE: You can add a different class name to your table
+//@Table (name: 'table_user')
 @Table()
 class User {
-  // as tabela deve ter um id, isso é a indicacão do primary key do mysql
-  // NOTA: Por padrão o id é auto increment.
-  // para alterar isso faça: @Id(autoIncrement: false)
+  // the tables must have an id, this is the indication of the mysql primary key
+   // NOTE: By default the id is auto increment.
+   // to change this do: @Id (autoIncrement: false)
   @Id()
   int id;
-  // essa anotação indicar que essa coluna nao pode ficar nula mo seu banco de dados
+  // this annotation indicates that this column cannot be null in your database
   @NotNull()
   String name;
 
@@ -30,14 +30,14 @@ class User {
   String email;
 
   User({this.id, this.name, this.age, this.email});
-  // é necessario ter um contrutor fromJson para que o orm funcione
-  User.fromJson(Map<String, dynamic> json) {
+// it is necessary to have a fromJson constructor for the orm to work  
+User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     age = json['age'];
     email = json['email'];
   }
-
+// it is necessary to have a toJson function for the orm to work
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['id'] = this.id;
@@ -47,24 +47,26 @@ class User {
     return data;
   }
 ```
-- Crie seu repositório:
+- Create your repository:
 ```dart
-//NOTA: o Primeiro parametro é sua classe model
-// o segundo é o tipo do id no caso um int
+// NOTE: the First parameter is your model class
+// the second is the type of id in case an int
 class UserRepository extends Repository<User, int> {}
 ```
-nos repositorio exite os seguintes métodos
+in the repository there are the following methods
 - findOne(id);
-buscar objeto por id;
-- finAll(); 
-retornar todos as objeto da tabela.
-- delete(id);
-apagar um objeto
+fetch object by id;
+- finAll();
+return all table objects.
+- deleteOne(id);
+delete an object
 - insert(object)
-apagar um objeto
+creates a new object
+- update(id, object) 
+updates an object
+#### start the database connection to the database
 
-#### inicar o banco conexão com o banco de dodos
-no main.dart
+in main.dart
 ```dart
 void main() async {
   MySQL db = MySQL(
@@ -77,4 +79,6 @@ void main() async {
 ```
 #### TODO:
 - Custom query
-- Suporte para Foreign key
+- Foreign key support(1:1,N:N,1:N)
+
+observations: In the future, the ORM will have a relationship between the arguarde tables

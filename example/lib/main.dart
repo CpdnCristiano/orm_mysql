@@ -11,6 +11,7 @@ void main() async {
     db: Config.db,
   );
   await db.init();
+
   await runApp(GetServer(
     getPages: AppPages.routes,
   ));

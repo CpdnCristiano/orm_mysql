@@ -42,7 +42,6 @@ class MySQL {
   }
 
   Future<void> close() async {
-
     await _connection.close();
   }
 
