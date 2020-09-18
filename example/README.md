@@ -24,7 +24,7 @@ make a new request on `https://orm-get-server.herokuapp.com/api/user` using the 
 ##### Update
 Make a new request request using the put method on the `https://orm-get-server.herokuapp.com/api/user?id=1` by passing the user ID as a parameter, and with the json body, as the create request.
 
-##### Update
+##### Delete
 
 Make a new request request using the delete method on the  `https://orm-get-server.herokuapp.com/api/user?id=1`, passing the user ID as a parameter
 
